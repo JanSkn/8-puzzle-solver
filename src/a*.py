@@ -1,11 +1,13 @@
 import numpy as np
 import time
+from gui import root, create_board, button
 
 nums = np.arange(1, 9)
-blank_tile = 0      # Placeholder
+blank_tile = 0      # placeholder
 nums = np.append(nums, blank_tile) 
 goal = np.arange(1, 9)
 goal = np.append(goal, blank_tile)
+steps = []          # for GUI
 
 def is_solvable(arr):
     inv_count = 0
@@ -25,12 +27,12 @@ def generate_start():
         if is_solvable(nums):
             return nums
 
-def down(board):
+def left(board):
     new_state = np.copy(board)
     index = np.argwhere(board == blank_tile)[0]
-    if  index not in [0, 1, 2]:     # otherwise already uppermost
-        temp = new_state[index - 3]
-        new_state[index - 3] = new_state[index]
+    if  index not in [2, 5, 8]:     # otherwise already rightmost
+        temp = new_state[index + 1]
+        new_state[index + 1] = new_state[index]
         new_state[index] = temp
         return new_state
     else:
@@ -46,18 +48,7 @@ def right(board):
         return new_state
     else:
         return None                 # can't move
-    
-def left(board):
-    new_state = np.copy(board)
-    index = np.argwhere(board == blank_tile)[0]
-    if  index not in [2, 5, 8]:     # otherwise already rightmost
-        temp = new_state[index + 1]
-        new_state[index + 1] = new_state[index]
-        new_state[index] = temp
-        return new_state
-    else:
-        return None                 # can't move
-    
+
 def up(board):
     new_state = np.copy(board)
     index = np.argwhere(board == blank_tile)[0]
@@ -67,7 +58,18 @@ def up(board):
         new_state[index] = temp
         return new_state
     else:
-        return None                 # can't move    
+        return None                 # can't move  
+
+def down(board):
+    new_state = np.copy(board)
+    index = np.argwhere(board == blank_tile)[0]
+    if  index not in [0, 1, 2]:     # otherwise already uppermost
+        temp = new_state[index - 3]
+        new_state[index - 3] = new_state[index]
+        new_state[index] = temp
+        return new_state
+    else:
+        return None                 # can't move  
 
 def dist(b1, b2):
     d = 0
@@ -114,13 +116,17 @@ def a_star(board):
 
         # use lambda function instead of separate func declaration
         fringe.sort(key=lambda x: x.f)      # property of fringe: ordered queue
-        if len(fringe) > 0: current_node = fringe.pop(0)        # default = -1, pop first
+        if len(fringe) > 0: 
+            current_node = fringe.pop(0)        # default = -1, pop first
 
-    while node.parent is not None:
-        moves.insert(0, node.direction)
-        node = node.parent
+    result = current_node.board
+
+    while current_node.parent is not None:
+        moves.insert(0, current_node.direction)
+        steps.insert(0, shape_board(current_node.board))
+        current_node = current_node.parent
     
-    return moves, current_node.board 
+    return moves, result 
 
 if __name__ == "__main__":
     b = generate_start()  
@@ -129,11 +135,18 @@ if __name__ == "__main__":
     end = time.time()
     print("Start:")
     print(shape_board(b))
+    print()
     print("Moves:")
     print(moves)
+    print()
     print("Result:")
     print(shape_board(board))
+    print()
     print(f"Number of moves: {len(moves)}, processing time: {end - start}")
 
+    # call GUI
+    create_board(shape_board(b))
+    button(steps)       # shows solution on button click
+    root.mainloop()
 
 
