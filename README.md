@@ -78,7 +78,7 @@ The source code was built with Python, mainly using NumPy and Tkinter.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Simply run the files `greedy.py` or `a_star.py` in `src` and click on the button to see the solution.
+Simply run the files `greedy.py` or `a_star.py` in `src` and click the button to see the solution.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
